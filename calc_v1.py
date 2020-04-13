@@ -1,13 +1,24 @@
 import tkinter as tk
 import random
 from random import randint, shuffle
+from operator import add, sub, mul, truediv
 
 root = tk.Tk()
 root.grid()
 
-
+oplist = []
 randomlist = []
 answerlist = [0,0]
+lastresult = ["..."]
+
+'''use dictionary to story operator functions'''
+operator = {'+': add, 
+    '-': sub, 
+    'x': mul, 
+    '/': truediv}
+
+for key in operator:
+    oplist.append(key)
 
 '''generate random numbers for the correct answer'''
 num1 = randint(15, 30)
@@ -16,7 +27,11 @@ randomlist.append(num1)
 num2 = randint(5, 20)
 randomlist.append(num2)
 
-answer = num1 + num2
+'''Calculate answer'''
+
+op1 = oplist[randint(0, 3)]
+answer = operator.get(op1)(num1,num2)
+answer = round(answer, 2)
 
 showanswer = tk.StringVar(value=answer)
 
@@ -70,9 +85,15 @@ def answer_append3():
 '''function for submit button'''
 def correct():
     if num1 == answerlist[-1] and num2 == answerlist[-2] or num2 == answerlist[-1] and num1 == answerlist[-2]:
-        print("Correct")
+        print("Correct!!")
+        lastresult.append("Correct!!")
+        result1 = tk.StringVar(value=lastresult[-1])
+        label6.configure(textvariable=result1)
     else:
-        print("Incorrect")
+        print("try again")
+        lastresult.append("Try Again")
+        result1= tk.StringVar(value=lastresult[-1])
+        label6.configure(textvariable=result1)
 
 
 '''display the value or the variables on the buttons in the GUI'''
@@ -110,6 +131,8 @@ selected_answer1 = answerlist[-2]
 
 selected_answer2 = answerlist[-1]
 
+result = lastresult[-1]
+
 label1 = tk.Label(labelf, textvariable=selected_answer1)
 label1.grid(row=3, column=0)
 
@@ -125,7 +148,18 @@ label4.grid(row=3, column=3)
 label5 = tk.Label(labelf, textvariable=showanswer)
 label5.grid(row=3, column=4)
 
+label6 = tk.Label(labelf, textvariable=result)
+label6.grid(row=4, columnspan=5)
+
 submitbutton = tk.Button(root, text="SUBMIT", command=correct)
-submitbutton.grid(row=4)
+submitbutton.grid(row=5)
+
+'''restart for next question'''
+def clear():
+    nextsum = "restart app"
+    return nextsum
+
+nextsum = tk.Button(root, text="NEXT", command=clear)
+nextsum.grid(row=5, column=1)
 
 root.mainloop()
