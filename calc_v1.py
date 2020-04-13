@@ -7,11 +7,14 @@ root = tk.Tk()
 root.grid()
 
 oplist = []
+oplist1 = []
 randomlist = []
-answerlist = [0,0]
+answerlist = ['x','y']
+operatoranswer = [' ? ']
 lastresult = ["..."]
 
-'''use dictionary to story operator functions'''
+
+'''use dictionary to store operator functions'''
 operator = {'+': add, 
     '-': sub, 
     'x': mul, 
@@ -20,6 +23,7 @@ operator = {'+': add,
 for key in operator:
     oplist.append(key)
 
+
 '''generate random numbers for the correct answer'''
 num1 = randint(15, 30)
 randomlist.append(num1)
@@ -27,15 +31,17 @@ randomlist.append(num1)
 num2 = randint(5, 20)
 randomlist.append(num2)
 
-'''Calculate answer'''
-
 op1 = oplist[randint(0, 3)]
+oplist1.append(op1)
+
+'''Calculate answer'''
 answer = operator.get(op1)(num1,num2)
 answer = round(answer, 2)
 
 showanswer = tk.StringVar(value=answer)
 
-'''Generate the incorrect numbers and change them if the same'''
+
+'''Generate the random dummy numbers & operators and change them if the same'''
 randomnr1 = randint(5, 30)
 
 if randomnr1 == num1 or randomnr1 == num2:
@@ -52,8 +58,20 @@ else:
     pass
 randomlist.append(randomnr2)
 
-'''Shuffle list to allow for random button possitions.'''
+if op1 == '/':
+    oplist1.extend(['+','-'])
+if op1 == 'x':
+    oplist1.extend(['+','-'])
+if op1 == '-':
+    oplist1.extend(['+','x'])
+if op1 == '+':
+    oplist1.extend(['-','/'])
+
+
+'''Create new shuffled lists to allow for random button positions.'''
 randomlist1 = random.sample(randomlist, k=4)
+operatorshuffle = random.sample(oplist1, k=3)
+
 
 '''check itermediate results'''
 print(randomlist) 
@@ -81,10 +99,25 @@ def answer_append3():
     update_answer()
     print(answerlist)
 
+def op_append0():
+    operatoranswer.append(operatorshuffle[0])
+    update_answer()
+    print(operatoranswer)
+
+def op_append1():
+    operatoranswer.append(operatorshuffle[1])
+    update_answer()
+    print(operatoranswer)
+
+def op_append2():
+    operatoranswer.append(operatorshuffle[2])
+    update_answer()
+    print(operatoranswer)
+
 
 '''function for submit button'''
 def correct():
-    if num1 == answerlist[-1] and num2 == answerlist[-2] or num2 == answerlist[-1] and num1 == answerlist[-2]:
+    if num1 == answerlist[-1] and num2 == answerlist[-2] and operatoranswer[-1] == op1 or num2 == answerlist[-1] and num1 == answerlist[-2] and operatoranswer[-1] == op1:
         print("Correct!!")
         lastresult.append("Correct!!")
         result1 = tk.StringVar(value=lastresult[-1])
@@ -105,38 +138,57 @@ for item in randomlist1:
     if item == randomlist1[1]:
         textnum = tk.StringVar(value=randomlist1[1])
         button2 = tk.Button(root, textvariable=textnum, command=answer_append1)
-        button2.grid(row=1)
+        button2.grid(row=0, column=1)
     if item == randomlist1[2]:
         textnum = tk.StringVar(value=randomlist1[2])
         button3 = tk.Button(root, textvariable=textnum, command=answer_append2)
-        button3.grid(row=0, column=1)
+        button3.grid(row=0, column=2)
     if item == randomlist1[3]:
         textnum = tk.StringVar(value=randomlist1[3])
         button4 = tk.Button(root, textvariable=textnum, command=answer_append3)
-        button4.grid(row=1, column=1)
+        button4.grid(row=0, column=3)
+
+for operator in operatorshuffle:
+    if operator == operatorshuffle[0]:
+        textop = tk.StringVar(value=operatorshuffle[0])
+        opbutton1 = tk.Button(root, textvariable=textop, command=op_append0)
+        opbutton1.grid(row=2)
+    if operator == operatorshuffle[1]:
+        textop = tk.StringVar(value=operatorshuffle[1])
+        opbutton1 = tk.Button(root, textvariable=textop, command=op_append1)
+        opbutton1.grid(row=2, column=1)
+    if operator == operatorshuffle[2]:
+        textop = tk.StringVar(value=operatorshuffle[2])
+        opbutton1 = tk.Button(root, textvariable=textop, command=op_append2)
+        opbutton1.grid(row=2, column=2)
+        
 
 
-'''Answer dsplay area'''
+'''Answer display area'''
+
+labelf = tk.LabelFrame(root, text='Answer:')
+labelf.grid(row=3, columnspan=7)
+
 def update_answer():
     textnum = tk.StringVar(value=answerlist[-2])
     label1.configure(textvariable=textnum)
     textnum1 = tk.StringVar(value=answerlist[-1])
     label3.configure(textvariable=textnum1)
+    textoperator = tk.StringVar(value=operatoranswer[-1])
+    label2.configure(textvariable=textoperator)
 
-
-labelf = tk.LabelFrame(root, text='Answer:')
-labelf.grid(row=3, columnspan=5)
-
-selected_answer1 = answerlist[-2]
-
-selected_answer2 = answerlist[-1]
+'''placeholder values'''
+selected_answer1 = tk.StringVar(value=answerlist[-2])
+selected_answer2 = tk.StringVar(value=answerlist[-1])
+selected_operator = tk.StringVar(value=operatoranswer[-1])
 
 result = lastresult[-1]
 
+'''Labels to displayselected values'''
 label1 = tk.Label(labelf, textvariable=selected_answer1)
 label1.grid(row=3, column=0)
 
-label2 = tk.Label(labelf, text=" + ")
+label2 = tk.Label(labelf, textvariable=selected_operator)
 label2.grid(row=3, column=1)
 
 label3 = tk.Label(labelf, textvariable=selected_answer2)
@@ -151,15 +203,16 @@ label5.grid(row=3, column=4)
 label6 = tk.Label(labelf, textvariable=result)
 label6.grid(row=4, columnspan=5)
 
-submitbutton = tk.Button(root, text="SUBMIT", command=correct)
-submitbutton.grid(row=5)
+'''Other buttons'''
 
-'''restart for next question'''
+submitbutton = tk.Button(root, text="SUBMIT", command=correct)
+submitbutton.grid(row=5, columnspan=2)
+
 def clear():
     nextsum = "restart app"
     return nextsum
 
 nextsum = tk.Button(root, text="NEXT", command=clear)
-nextsum.grid(row=5, column=1)
+nextsum.grid(row=5, column=2, columnspan=2)
 
 root.mainloop()
