@@ -2,6 +2,7 @@ import tkinter as tk
 import random
 from random import randint, shuffle
 from operator import add, sub, mul, truediv
+import time
 
 root = tk.Tk()
 root.grid()
@@ -32,14 +33,12 @@ num2 = randint(5, 20)
 randomlist.append(num2)
 
 op1 = oplist[randint(0, 3)]
-oplist1.append(op1)
 
 '''Calculate answer'''
 answer = operator.get(op1)(num1,num2)
 answer = round(answer, 2)
 
 showanswer = tk.StringVar(value=answer)
-
 
 '''Generate the random dummy numbers & operators and change them if the same'''
 randomnr1 = randint(5, 30)
@@ -58,20 +57,8 @@ else:
     pass
 randomlist.append(randomnr2)
 
-if op1 == '/':
-    oplist1.extend(['+','-'])
-if op1 == 'x':
-    oplist1.extend(['+','-'])
-if op1 == '-':
-    oplist1.extend(['+','x'])
-if op1 == '+':
-    oplist1.extend(['-','/'])
-
-
 '''Create new shuffled lists to allow for random button positions.'''
 randomlist1 = random.sample(randomlist, k=4)
-operatorshuffle = random.sample(oplist1, k=3)
-
 
 '''check itermediate results'''
 print(randomlist) 
@@ -100,20 +87,24 @@ def answer_append3():
     print(answerlist)
 
 def op_append0():
-    operatoranswer.append(operatorshuffle[0])
+    operatoranswer.append(oplist[0])
     update_answer()
     print(operatoranswer)
 
 def op_append1():
-    operatoranswer.append(operatorshuffle[1])
+    operatoranswer.append(oplist[1])
     update_answer()
     print(operatoranswer)
 
 def op_append2():
-    operatoranswer.append(operatorshuffle[2])
+    operatoranswer.append(oplist[2])
     update_answer()
     print(operatoranswer)
 
+def op_append2():
+    operatoranswer.append(oplist[3])
+    update_answer()
+    print(operatoranswer)
 
 '''function for submit button'''
 def correct():
@@ -148,20 +139,23 @@ for item in randomlist1:
         button4 = tk.Button(root, textvariable=textnum, command=answer_append3)
         button4.grid(row=0, column=3)
 
-for operator in operatorshuffle:
-    if operator == operatorshuffle[0]:
-        textop = tk.StringVar(value=operatorshuffle[0])
+for operator in oplist:
+    if operator == oplist[0]:
+        textop = tk.StringVar(value=oplist[0])
         opbutton1 = tk.Button(root, textvariable=textop, command=op_append0)
         opbutton1.grid(row=2)
-    if operator == operatorshuffle[1]:
-        textop = tk.StringVar(value=operatorshuffle[1])
+    if operator == oplist[1]:
+        textop = tk.StringVar(value=oplist[1])
         opbutton1 = tk.Button(root, textvariable=textop, command=op_append1)
         opbutton1.grid(row=2, column=1)
-    if operator == operatorshuffle[2]:
-        textop = tk.StringVar(value=operatorshuffle[2])
+    if operator == oplist[2]:
+        textop = tk.StringVar(value=oplist[2])
         opbutton1 = tk.Button(root, textvariable=textop, command=op_append2)
         opbutton1.grid(row=2, column=2)
-        
+    if operator == oplist[2]:
+        textop = tk.StringVar(value=oplist[2])
+        opbutton1 = tk.Button(root, textvariable=textop, command=op_append2)
+        opbutton1.grid(row=2, column=3)
 
 
 '''Answer display area'''
@@ -214,5 +208,21 @@ def clear():
 
 nextsum = tk.Button(root, text="NEXT", command=clear)
 nextsum.grid(row=5, column=2, columnspan=2)
+
+def countdown(remaining, label):
+    if remaining <= 0:
+        labeltimer.configure(text="Time is up!")
+    else:
+        remaining -= 1
+        label.set(remaining)
+        root.after(1000, lambda: countdown(remaining, label))
+
+counter = 60
+timerlabel = tk.StringVar()
+timerlabel.set(counter)
+labeltimer = tk.Label(root, textvariable=timerlabel)
+labeltimer.grid(row=8)
+
+countdown(counter, timerlabel)
 
 root.mainloop()
